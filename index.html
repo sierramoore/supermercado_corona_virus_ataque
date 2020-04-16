@@ -18,7 +18,6 @@
         physics: {
             default: 'arcade',
             arcade: {
-                // gravity: { y: 300 },
                 debug: false
             }
         },
@@ -35,13 +34,18 @@
     let enemy;
     let cursors;
     let virus;
+    let shelf;
+    let shelfSmall;
+    let shelfLarge;
     let score = 0;
 
 
     function preload ()
     {
         this.load.image('bg', "assets/img/sky.png");
-        this.load.image('virus', 'assets/img/coronavirus_spine/images/classic/body.png');
+        this.load.image('ground', "assets/img/shelf.png");
+        this.load.image('tp', "assets/img/tp.png");
+
         this.load.spritesheet('player',
             'assets/img/dude.png',
             { frameWidth: 32, frameHeight: 48 }
@@ -54,16 +58,62 @@
 
     function create ()
     {
+        // VIRUS animate
+        virus = this.add.sprite(200, 200, 'virus');
+
         this.add.image(400, 300, 'bg');
-        player = this.physics.add.sprite(100, 300, 'player');
+        player = this.physics.add.sprite(30, 570, 'player');
         // player.setBounce(0.5);
         player.setCollideWorldBounds(true);
 
+        // SHELF
+        shelf = this.physics.add.staticGroup();
+        shelfSmall = this.physics.add.staticGroup();
+        shelfLarge = this.physics.add.staticGroup();
+
+        shelf.create(50, 300, 'ground').setScale(.8);
+        shelf.create(320, 150, 'ground').setScale(1.2);
+        shelf.create(600, 500, 'ground');
+        // shelf.create(750, 150, 'ground').setScale(1.4).refreshBody()
+
+        between = (x, min, max) => {
+            return x >= min && x <= max;
+        }
+
+        createShelves = () => {
+            let randomNumX;
+            let randomNumY;
+
+            for(let i=0; i < 5; i++) {
+                randomNumX = Math.floor((Math.random() * config.width) + 50);
+                randomNumY = Math.floor((Math.random() * config.height) + 50);
+
+                // shelf.create(randomNumX, randomNumY, 'ground');
+                // if(randomNumX >= 100) {
+                //     shelf.create(randomNumX + 150, randomNumY, 'ground');
+                // }
+
+                //if previous randomNumX is within 200 of current randomNumX then current randomNumX + 200
+
+                // generate one of [shelf, shelfSmall, shelfLarge]
+
+            }
+        }
+        createShelves();
+
+        // player collide w shelf
+        this.physics.add.collider(player, shelf);
+
+        // ADD TP
+        this.add.image(400, 300, 'tp');
 
         // ENEMY
         enemy = this.physics.add.sprite(350, 350, 'enemy');
         enemy.setCollideWorldBounds(true);
         enemy.setTint(0xff0000);
+
+        // enemy collide w shelf
+        this.physics.add.collider(enemy, shelf);
 
         function generateEnemies(enemy){
             // generate more enemies with time
@@ -109,6 +159,8 @@
     }
 
     function update () {
+        virus.x -= 2;
+
         cursors = this.input.keyboard.createCursorKeys();
         this.physics.moveToObject(enemy, player, 60, 9000);
 
@@ -144,15 +196,7 @@
 
 
     /*TODO
-    * generate enemies
-    * enemy follow player
-    * game over if gets hit 3X
-    * score increase if collects tp
-    * add space vertically where player can walk
     *
-    *
-    * probs
-    * enemy only following to original point
     * */
 </script>
 
