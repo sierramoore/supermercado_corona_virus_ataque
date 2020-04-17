@@ -38,6 +38,7 @@
     let shelfSmall;
     let shelfLarge;
     let score = 0;
+    let tp;
 
 
     function preload ()
@@ -59,7 +60,7 @@
     function create ()
     {
         // VIRUS animate
-        virus = this.add.sprite(200, 200, 'virus');
+        // virus = this.add.sprite(200, 200, 'virus');
 
         this.add.image(400, 300, 'bg');
         player = this.physics.add.sprite(30, 570, 'player');
@@ -68,17 +69,13 @@
 
         // SHELF
         shelf = this.physics.add.staticGroup();
-        shelfSmall = this.physics.add.staticGroup();
-        shelfLarge = this.physics.add.staticGroup();
-
-        shelf.create(50, 300, 'ground').setScale(.8);
-        shelf.create(320, 150, 'ground').setScale(1.2);
-        shelf.create(600, 500, 'ground');
+        // shelfSmall = this.physics.add.staticGroup();
+        // shelfLarge = this.physics.add.staticGroup();
+        // shelf.create(50, 300, 'ground').setScale(.8);
+        // shelf.create(320, 150, 'ground').setScale(1.2);
+        // shelf.create(600, 500, 'ground');
         // shelf.create(750, 150, 'ground').setScale(1.4).refreshBody()
 
-        between = (x, min, max) => {
-            return x >= min && x <= max;
-        }
 
         createShelves = () => {
             let randomNumX;
@@ -88,24 +85,24 @@
                 randomNumX = Math.floor((Math.random() * config.width) + 50);
                 randomNumY = Math.floor((Math.random() * config.height) + 50);
 
-                // shelf.create(randomNumX, randomNumY, 'ground');
-                // if(randomNumX >= 100) {
-                //     shelf.create(randomNumX + 150, randomNumY, 'ground');
-                // }
-
-                //if previous randomNumX is within 200 of current randomNumX then current randomNumX + 200
-
-                // generate one of [shelf, shelfSmall, shelfLarge]
+                shelf.create(randomNumX, randomNumY, 'ground');
+                this.add.image(randomNumX, randomNumY - 40, 'tp').setScale(.8);
+                this.add.image(randomNumX, randomNumY + 40, 'tp').setScale(.8);
 
             }
         }
         createShelves();
 
+
+        // collectTp = (player, tp) =>{
+        //     tp.disableBody(true, true)
+        // }
+        // this.physics.add.overlap(player, tp, collectTp, null, this);
+        // collectTp(player, tp);
+
         // player collide w shelf
         this.physics.add.collider(player, shelf);
-
-        // ADD TP
-        this.add.image(400, 300, 'tp');
+        this.physics.add.collider(player, tp);
 
         // ENEMY
         enemy = this.physics.add.sprite(350, 350, 'enemy');
