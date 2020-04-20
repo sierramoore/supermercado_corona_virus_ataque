@@ -16,8 +16,19 @@
 
 // generate one of [shelf, shelfSmall, shelfLarge]
 
+// this.add.image(xy[i], xy[i + 1] - 40, 'tp').setScale(.8);
+// this.add.image(xy[i], xy[i + 1] + 40, 'tp').setScale(.8);
 
 createShelves = () => {
+    // let randomNumX;
+    // let randomNumY;
+    // let shelves = [];
+    // for(let i=0; i < 5; i++) { }
+    // randomNumX = Math.floor((Math.random() * config.width) + 50);
+    // randomNumY = Math.floor((Math.random() * config.height) + 50);
+    // shelf.create(randomNumX, randomNumY, 'shelf');
+    // shelves.push(shelf);
+    // push each generated shelf into array and compare last item in array x and y values and if is with 100px of current generated randomNumX or y then add 100px to x and y to seperate it
     let randomNumX;
     let randomNumY;
 
@@ -31,3 +42,16 @@ createShelves = () => {
     }
 }
 createShelves();
+
+
+
+// shelves = this.physics.add.group({
+//     key: 'shelf',
+//     repeat: 5,
+//     setXY: {
+//         x: Math.floor((Math.random() * config.width) + 50),
+//         y: Math.floor((Math.random() * config.height) + 50),
+//         stepX: 100,
+//         stepY: 100
+//     }
+// })

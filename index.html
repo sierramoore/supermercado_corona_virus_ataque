@@ -11,6 +11,8 @@
 
 
 <script>
+    // var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', { preload: preload, create: create, update: update });
+
     var config = {
         type: Phaser.AUTO,
         width: 800,
@@ -39,12 +41,14 @@
     let shelfLarge;
     let score = 0;
     let tp;
+    let timer;
+    let shelves = [];
 
 
     function preload ()
     {
         this.load.image('bg', "assets/img/sky.png");
-        this.load.image('ground', "assets/img/shelf.png");
+        this.load.image('shelf', "assets/img/shelf.png");
         this.load.image('tp', "assets/img/tp.png");
 
         this.load.spritesheet('player',
@@ -62,6 +66,8 @@
         // VIRUS animate
         // virus = this.add.sprite(200, 200, 'virus');
 
+        timer = this.time.addEvent({ delay: 0, timeScale: 1.0 });
+
         this.add.image(400, 300, 'bg');
         player = this.physics.add.sprite(30, 570, 'player');
         // player.setBounce(0.5);
@@ -69,40 +75,41 @@
 
         // SHELF
         shelf = this.physics.add.staticGroup();
-        // shelfSmall = this.physics.add.staticGroup();
-        // shelfLarge = this.physics.add.staticGroup();
-        // shelf.create(50, 300, 'ground').setScale(.8);
-        // shelf.create(320, 150, 'ground').setScale(1.2);
-        // shelf.create(600, 500, 'ground');
-        // shelf.create(750, 150, 'ground').setScale(1.4).refreshBody()
-
 
         createShelves = () => {
-            let randomNumX;
-            let randomNumY;
+            let xy = [50, 300, 320, 150, 600, 500, 650, 150];
 
-            for(let i=0; i < 5; i++) {
-                randomNumX = Math.floor((Math.random() * config.width) + 50);
-                randomNumY = Math.floor((Math.random() * config.height) + 50);
+            for(let i=0; i < xy.length - 1; i++) {
+                shelf.create(xy[i], xy[i + 1], 'shelf');
+                shelves.push(shelf)
 
-                shelf.create(randomNumX, randomNumY, 'ground');
-                this.add.image(randomNumX, randomNumY - 40, 'tp').setScale(.8);
-                this.add.image(randomNumX, randomNumY + 40, 'tp').setScale(.8);
+                tp = this.physics.add.group({
+                    key: 'tp',
+                    repeat: 1,
+                    setXY: { x: xy[i], y: xy[i + 1] - 40, stepY: 85 },
+                    setScale: {x: .7, y: .7}
+                });
 
+                i += 1;
             }
         }
         createShelves();
 
+        function collectTp (player, tp)
+        {
+            console.log('collect func')
+            tp.disableBody(true, true); //remove tp
 
-        // collectTp = (player, tp) =>{
-        //     tp.disableBody(true, true)
-        // }
-        // this.physics.add.overlap(player, tp, collectTp, null, this);
-        // collectTp(player, tp);
+            score += 10;
+            scoreText.setText('Score: ' + score);
+        }
 
-        // player collide w shelf
-        this.physics.add.collider(player, shelf);
-        this.physics.add.collider(player, tp);
+        this.physics.add.overlap(player, tp, collectTp, null, this);
+
+        // this.physics.add.collider(player, tp);
+
+        player.setDepth(100) //z-index
+
 
         // ENEMY
         enemy = this.physics.add.sprite(350, 350, 'enemy');
@@ -113,11 +120,16 @@
         this.physics.add.collider(enemy, shelf);
 
         function generateEnemies(enemy){
-            // generate more enemies with time
+            // generate more enemies with time; no worky yet
+            // console.log(timer);
+            if(timer % 9 === 0){
+                console.log('create another enemy')
+            }
         }
+        generateEnemies();
 
         virus = this.physics.add.group();
-        function hitVirus (player, virus) {
+        function infected (player, virus) {
             this.physics.pause();
 
             player.setTint(0xff0000);
@@ -126,11 +138,11 @@
 
             gameOver = true;
         }
-        this.physics.add.collider(player, virus, hitVirus, null, this);
+        this.physics.add.collider(player, virus, infected, null, this);
         this.physics.moveToObject(enemy, player, 60, 9000);
-        this.physics.add.collider(player, enemy, hitVirus, null, this);
+        this.physics.add.collider(player, enemy, infected, null, this);
 
-        scoreText = this.add.text(16, 16, 'points: 0', { fontSize: '24px', fill: '#662994' });
+        scoreText = this.add.text(16, 16, 'tp: 0', { fontSize: '24px', fill: '#e52ba0' });
 
 
         // player movement
